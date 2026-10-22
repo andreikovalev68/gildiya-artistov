@@ -162,3 +162,10 @@ footer{background:var(--blue);color:#fff;padding:26px 0;font-size:15px}
 
 /* шапка на средних экранах (860–1000 px): без горизонтальной прокрутки */
 @media (max-width:1000px) and (min-width:861px){.nav{gap:16px;font-size:15px}.phone{font-size:16px}.top-in{gap:14px}}
+
+/* заголовок на белом фоне, как в первой версии; синяя зона с фейерверками начинается с новогодней карточки */
+.hero{background:linear-gradient(180deg,#ffffff 0%,var(--soft) 100%);padding:34px 0 40px;position:static}
+.hero .h1{color:#d2271f;-webkit-text-stroke:0;paint-order:normal;text-shadow:.012em .012em 0 #b22019,.024em .024em 0 #961a14,.036em .036em 0 #7d1612,.048em .048em 0 #5f100d,.07em .1em .1em rgba(6,46,85,.45)}
+.hero .agency{color:var(--blue);text-shadow:none;margin-top:10px;letter-spacing:.04em}
+.zone .zone-top{padding-top:clamp(26px,3.4vw,44px);position:relative;z-index:1}
+.zone .feature{margin-top:0}
