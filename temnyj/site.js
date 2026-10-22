@@ -225,7 +225,8 @@ var IMG_DIR = '../img/';
     requestAnimationFrame(function () { wrap.style.opacity = '1'; });
   }
 
-  IMAGES.forEach(function (src) { new Image().src = src; });
+  function preload() { IMAGES.forEach(function (src) { new Image().src = src; }); }
+  if (document.readyState === 'complete') preload(); else window.addEventListener('load', preload);
 
   function relayout() {
     var r = host.getBoundingClientRect();
@@ -257,4 +258,19 @@ var IMG_DIR = '../img/';
   view.querySelector('.doc-close').addEventListener('click', function () { view.close(); });
   view.addEventListener('click', function (e) { if (e.target === view) view.close(); });
   view.addEventListener('close', function () { big.removeAttribute('src'); });
+})();
+
+/* цели Яндекс Метрики: работают, когда в странице задан номер счётчика (window.YM_ID) */
+(function () {
+  function goal(name) { if (window.ym && window.YM_ID) { try { window.ym(window.YM_ID, 'reachGoal', name); } catch (e) {} } }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a) return;
+    var h = a.getAttribute('href') || '';
+    if (h.indexOf('tel:') === 0) goal('call');
+    else if (h.indexOf('max.ru') > -1) goal('max');
+    else if (h.indexOf('t.me') > -1) goal('telegram');
+    else if (h.indexOf('rutube.ru') > -1) goal('video');
+    else if (a.classList.contains('doc')) goal('doc_open');
+  });
 })();

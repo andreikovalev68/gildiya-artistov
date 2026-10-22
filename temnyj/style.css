@@ -260,6 +260,7 @@ form.req{display:grid;gap:16px;padding:clamp(20px,3vw,32px);background:var(--car
 
 
 /* ===== Гильдия Артистов Эстрады: тёмный вариант ===== */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .brand{font-size:22px;white-space:nowrap;flex:0 0 auto}
 .top .btn-sm{white-space:nowrap;flex:0 0 auto}
 .nav{gap:18px;font-size:15px}
