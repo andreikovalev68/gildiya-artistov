@@ -265,8 +265,8 @@ form.req{display:grid;gap:16px;padding:clamp(20px,3vw,32px);background:var(--car
 @media (max-width:1100px){.nav{gap:16px;font-size:15px}.brand{font-size:21px}}
 .hero .wrap{position:relative;z-index:1}
 .label-row{position:relative;z-index:2;display:flex;padding:clamp(14px,1.6vw,22px) clamp(16px,2.5vw,40px) 0}
-.h1{font-size:6.1cqw;white-space:nowrap}
-.h1-sub{font-size:3.2cqw;margin-top:.2em}
+.h1{font-size:6.9cqw;white-space:nowrap;text-transform:none}
+.h1-sub{font-size:3.4cqw;margin-top:.2em;text-transform:none}
 .sec-head{margin:0 0 18px;font:700 clamp(34px,4.6vw,60px)/1.05 'Cormorant Garamond',Georgia,serif;color:var(--cream)}
 .eyebrow{font-size:15px}
 .big{margin:0 0 22px;font:700 clamp(26px,3.2vw,38px)/1.2 'Cormorant Garamond',Georgia,serif;color:var(--coral-hi)}

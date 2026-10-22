@@ -93,7 +93,7 @@
 
 /* золотистые фейерверки на синем фоне ленты фото (механика как на сайте Валерия Щербакова) */
 (function(){
-  var host = document.getElementById('stream');
+  var host = document.getElementById('zone') || document.getElementById('stream');
   if (!host || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
   var cv = document.createElement('canvas');
   cv.className = 'fxg';
@@ -105,7 +105,7 @@
 
   function size(){
     var r = host.getBoundingClientRect();
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = 1;
     W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
     cv.width = W * dpr; cv.height = H * dpr;
     fx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -137,7 +137,7 @@
     }
   }
   function launch(tx, ty){
-    rockets.push({x:tx + (Math.random() - .5) * 120, y:H + 10, tx:tx, ty:ty, vy:-(5.5 + Math.random() * 2.5)});
+    rockets.push({x:tx + (Math.random() - .5) * 120, y:H + 10, tx:tx, ty:ty, vy:-(5.5 + Math.random() * 2.5) * Math.max(1, Math.min(3, H / 420))});
   }
   function draw(t){
     fx.globalCompositeOperation = 'destination-out';
