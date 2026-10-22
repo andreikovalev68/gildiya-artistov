@@ -147,3 +147,5 @@ footer{background:var(--blue);color:#fff;padding:26px 0;font-size:15px}
 .stream .ish-card{position:absolute;overflow:hidden;backface-visibility:hidden;background:#fff;box-shadow:0 0 0 .3cqw #fff,0 .6cqw 2cqw rgba(0,20,60,.55)}
 .stream .ish-card img{display:block;width:100%;height:100%;object-fit:cover}
 @media (prefers-reduced-motion: reduce){.stream .ish-card{animation-play-state:paused}}
+.stream .fxg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;mix-blend-mode:screen}
+.stream{cursor:pointer}
