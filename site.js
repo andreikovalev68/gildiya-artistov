@@ -53,8 +53,7 @@
   var P = {perspective:30, cardWidth:18, cardHeight:25, cardRadius:0.4, birthHeight:2.6, exitHeight:46,
            railBirth:-11, railExit:44, fan:3.3, turnBirth:6, turnExit:28, stops:24};
   var CARDS = 9, SPEED = 20, AXIS = 50;
-  var IMAGES = ['anzhej-show','portret-kostyum','makferrin-rukopozhatie','syutkin-afisha','tokarev','mikrofon','andzhelina-afisha',
-                'para','kuzmin','kak-stat-zvezdoy','makferrin-poem','doroga-k-schastyu-proekt','portret','afisha-doroga-k-schastyu'];
+  var IMAGES = ['portret-kostyum','makferrin-rukopozhatie','syutkin-afisha','tokarev','mikrofon','andzhelina-afisha','para','kuzmin','makferrin-poem','doroga-k-schastyu-proekt','yubilej-afisha'];
 
   function keyframes(dir, name){
     var steps = [];
@@ -76,7 +75,7 @@
   persp.style.perspective = P.perspective + 'cqw';
   persp.style.perspectiveOrigin = '50% ' + AXIS + '%';
 
-  [['ish-r', 0], ['ish-l', 7]].forEach(function(side){
+  [['ish-r', 0], ['ish-l', 5]].forEach(function(side){
     for (var i = 0; i < CARDS; i++){
       var d = document.createElement('div');
       d.className = 'ish-card';
