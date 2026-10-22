@@ -155,7 +155,10 @@ footer{background:var(--blue);color:#fff;padding:26px 0;font-size:15px}
 .zone .hero{background:none;position:relative;z-index:1}
 .zone .stream{background:none;border:0;position:relative;z-index:1}
 .zone .fxg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
-.h1{text-transform:none;font-size:6.9cqw;color:#fff;
-  text-shadow:.012em .012em 0 #d6e8ff,.024em .024em 0 #9cc2ee,.036em .036em 0 #4a84c8,.048em .048em 0 #0e4a85,.06em .06em 0 #04345e,.09em .12em .1em rgba(0,10,40,.65),0 0 .5em rgba(255,214,102,.28)}
-.agency{color:#ffe9a0;text-shadow:0 2px 0 #7a5a06,0 4px 10px rgba(0,0,0,.45);letter-spacing:.05em}
+.h1{text-transform:none;font-size:6.9cqw;color:#d2271f;-webkit-text-stroke:.045em #fff;paint-order:stroke fill;
+  text-shadow:.02em .02em 0 #04345e,.04em .04em 0 #04345e,.06em .06em 0 #032a4b,.08em .08em 0 #021f38,.1em .14em .14em rgba(2,20,45,.55)}
+.agency{color:#fff;text-shadow:0 2px 0 #0a4a94,0 4px 0 #04345e,0 8px 14px rgba(0,10,40,.5);letter-spacing:.05em}
 @media (max-width:700px){.h1{font-size:15cqw}}
+
+/* шапка на средних экранах (860–1000 px): без горизонтальной прокрутки */
+@media (max-width:1000px) and (min-width:861px){.nav{gap:16px;font-size:15px}.phone{font-size:16px}.top-in{gap:14px}}
