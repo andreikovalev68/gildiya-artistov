@@ -45,55 +45,124 @@
   document.addEventListener('click', function (e) { if (nav.classList.contains('is-open') && !nav.contains(e.target) && !btn.contains(e.target)) setOpen(false); });
 })();
 
-/* Перенос формул Image Stream Hero (ruixen.ui) на чистый JS, как на сайте Валерия Щербакова: фото вылетают из центра в обе стороны */
-(function(){
-  var persp = document.getElementById('persp');
-  var root = document.getElementById('ish3d');
-  if (!persp || !root) return;
-  var P = {perspective:30, cardWidth:18, cardHeight:25, cardRadius:0.4, birthHeight:2.6, exitHeight:46,
-           railBirth:-11, railExit:44, fan:3.3, turnBirth:6, turnExit:28, stops:24};
-  var CARDS = 9, SPEED = 20, AXIS = 50;
-  var IMAGES = ['portret-kostyum','makferrin-rukopozhatie','syutkin-afisha','tokarev','mikrofon','andzhelina-afisha','para','kuzmin','makferrin-poem','doroga-k-schastyu-proekt','yubilej-afisha'];
+var IMG_DIR = 'img/';
+/* Лента фото по дуге цилиндра (Tilted Grid Hero, 21st.dev): перенос с React на чистый JS, как на сайте «Сайты на Tilda».
+   Каждая плитка режется на 16 вертикальных полос, полосы повёрнуты по дуге, плитка едет справа налево и берёт следующее фото за кадром. */
+(function () {
+  'use strict';
+  var host = document.getElementById('tgh');
+  if (!host) return;
 
-  function keyframes(dir, name){
-    var steps = [];
-    for (var s = 0; s <= P.stops; s++){
-      var u = s / P.stops;
-      var scale = (P.birthHeight / P.cardHeight) * Math.pow(P.exitHeight / P.birthHeight, u);
-      var z = P.perspective * (1 - 1 / scale);
-      var rail = P.railExit - (P.railExit - P.railBirth) * Math.pow(1 - u, P.fan);
-      var turn = P.turnBirth + (P.turnExit - P.turnBirth) * u;
-      steps.push((u * 100).toFixed(2) + '%{transform:translate3d(' + (dir * rail).toFixed(2) + 'cqw,0,' + z.toFixed(2) + 'cqw) rotateY(' + (-dir * turn).toFixed(2) + 'deg)}');
-    }
-    return '@keyframes ' + name + '{' + steps.join('') + '}';
+  var IMAGES = ['portret-kostyum', 'makferrin-rukopozhatie', 'syutkin-afisha', 'tokarev', 'mikrofon', 'andzhelina-afisha',
+                'para', 'kuzmin', 'makferrin-poem', 'doroga-k-schastyu-proekt', 'yubilej-afisha']
+    .map(function (n) { return IMG_DIR + n + '.jpg'; });
+  var P = { speed: 5, tileHeight: 74, aspect: 0.8, gap: 6, axis: 50, curve: 68, fade: 10 };
+  var SLICES = 16, CAMERA = 1.6, MAX_WIDTH = 55;
+  var bend = Math.min(85, Math.max(5, P.curve)) * Math.PI / 180;
+
+  function arc(b) { return (CAMERA - 1 + Math.cos(b)) / (2 * CAMERA * Math.sin(b)); }
+  function deg(rad) { return rad * 180 / Math.PI; }
+  function round(n) { return +n.toFixed(4); }
+
+  function measure(width, height) {
+    var h = Math.min(P.tileHeight / 100 * height, (MAX_WIDTH / 100 * width) / P.aspect);
+    var radius = width * arc(bend);
+    if (!(h > 0) || !(radius > 0)) return { columns: 2, sweep: 0, unit: 0, limit: 0 };
+    var unit = deg(h / radius);
+    var pitch = (P.aspect + P.gap / 100) * unit;
+    var limit = deg(bend) + P.aspect * unit / 2;
+    var columns = Math.min(60, Math.max(2, Math.ceil(2 * limit / pitch)));
+    var sweep = round(columns * pitch / 2);
+    return { columns: columns, sweep: sweep, unit: round(unit), limit: round(Math.min(sweep, limit)) };
   }
 
-  var st = document.createElement('style');
-  st.textContent = keyframes(1, 'ish-r') + keyframes(-1, 'ish-l');
-  document.head.appendChild(st);
+  function u(n) {
+    return 'calc(' + round(n) + ' * min(' + P.tileHeight + 'cqh, ' + round(MAX_WIDTH / P.aspect) + 'cqw))';
+  }
 
-  persp.style.perspective = P.perspective + 'cqw';
-  persp.style.perspectiveOrigin = '50% ' + AXIS + '%';
+  var styleEl = document.createElement('style');
+  document.head.appendChild(styleEl);
+  var layout = null;
+  var shown = {};
 
-  [['ish-r', 0], ['ish-l', 5]].forEach(function(side){
-    for (var i = 0; i < CARDS; i++){
-      var d = document.createElement('div');
-      d.className = 'ish-card';
-      d.style.cssText = 'left:50%;top:' + AXIS + '%;width:' + P.cardWidth + 'cqw;height:' + P.cardHeight + 'cqw;' +
-        'margin-left:' + (-P.cardWidth / 2) + 'cqw;margin-top:' + (-P.cardHeight / 2) + 'cqw;border-radius:' + P.cardRadius + 'cqw;' +
-        'animation:' + side[0] + ' ' + SPEED + 's linear infinite;animation-delay:' + (-(i * SPEED) / CARDS) + 's';
-      var im = new Image();
-      im.src = 'img/' + IMAGES[(i + side[1]) % IMAGES.length] + '.jpg';
-      im.alt = ''; im.decoding = 'async'; im.draggable = false;
-      d.appendChild(im);
-      root.appendChild(d);
+  function build(L) {
+    var columns = L.columns, sweep = L.sweep, unit = L.unit, limit = L.limit;
+    var r = 100 * arc(bend);
+    var radius = round(r) + 'cqw';
+    function turn(d) { return 'translateZ(' + radius + ') rotateY(' + round(d) + 'deg) translateZ(-' + radius + ')'; }
+    var hide = round((sweep - limit) / (2 * (sweep || 1)) * 100);
+    styleEl.textContent =
+      '@keyframes tgh-orbit{from{transform:' + turn(-sweep) + '}to{transform:' + turn(sweep) + '}' +
+      '0%,' + hide + '%,' + (100 - hide) + '%,100%{visibility:hidden}' +
+      (hide + 0.001) + '%,' + (100 - hide - 0.001) + '%{visibility:visible}}' +
+      '@media(prefers-reduced-motion:reduce){.tgh-tile{animation-play-state:paused}}';
+
+    var share = P.aspect / SLICES;
+    var duration = columns * P.speed;
+    var mask = 'linear-gradient(90deg,transparent,#000 ' + P.fade + '%,#000 ' + (100 - P.fade) + '%,transparent)';
+
+    host.textContent = '';
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .5s;' +
+      'perspective:' + round(r * CAMERA) + 'cqw;perspective-origin:50% ' + P.axis + '%;' +
+      '-webkit-mask-image:' + mask + ';mask-image:' + mask;
+
+    for (var t = 0; t < columns; t++) {
+      (function (t) {
+        var first = columns - 1 - t;
+        var idx = (shown[t] != null ? shown[t] : first) % IMAGES.length;
+        var tile = document.createElement('div');
+        tile.className = 'tgh-tile';
+        tile.style.cssText = 'position:absolute;left:calc(50% - ' + u(P.aspect / 2) + ');top:calc(' + P.axis + '% - ' + u(0.5) + ');' +
+          'width:' + u(P.aspect) + ';height:' + u(1) + ';transform-style:preserve-3d;' +
+          'animation:tgh-orbit ' + duration + 's linear ' + (-t * P.speed) + 's infinite';
+        for (var k = 0; k < SLICES; k++) {
+          var s = document.createElement('div');
+          s.className = 'tgh-slice';
+          s.style.cssText = 'position:absolute;top:0;overflow:hidden;left:' + u((P.aspect - share) / 2) +
+            ';width:' + (k === SLICES - 1 ? u(share) : 'calc(' + u(share) + ' + 1px)') + ';height:' + u(1) +
+            ';transform:' + turn((P.aspect / 2 - (k + 0.5) * share) * unit) +
+            (k === 0 ? ';border-radius:10px 0 0 10px' : '') + (k === SLICES - 1 ? ';border-radius:0 10px 10px 0' : '');
+          var im = new Image();
+          im.src = IMAGES[idx];
+          im.alt = ''; im.draggable = false; im.decoding = 'async';
+          im.style.cssText = 'position:absolute;top:0;max-width:none;object-fit:cover;left:' + u(-k * share) + ';width:' + u(P.aspect) + ';height:' + u(1);
+          s.appendChild(im);
+          tile.appendChild(s);
+        }
+        tile.addEventListener('animationiteration', function (e) {
+          if (e.target !== tile) return;
+          var lap = Math.round(e.elapsedTime / duration);
+          var next = lap * columns + first;
+          if (shown[t] === next) return;
+          shown[t] = next;
+          var src = IMAGES[next % IMAGES.length];
+          tile.querySelectorAll('img').forEach(function (i) { i.src = src; });
+        });
+        wrap.appendChild(tile);
+      })(t);
     }
-  });
+    host.appendChild(wrap);
+    requestAnimationFrame(function () { wrap.style.opacity = '1'; });
+  }
+
+  IMAGES.forEach(function (src) { new Image().src = src; });
+
+  function relayout() {
+    var r = host.getBoundingClientRect();
+    var next = measure(r.width, r.height);
+    if (layout && layout.columns === next.columns && layout.sweep === next.sweep && layout.unit === next.unit) return;
+    layout = next;
+    build(next);
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(relayout).observe(host);
+  else window.addEventListener('resize', relayout);
+  relayout();
 })();
 
 /* золотистые фейерверки на синем фоне ленты фото (механика как на сайте Валерия Щербакова) */
 (function(){
-  var host = document.getElementById('zone') || document.getElementById('stream');
+  var host = document.getElementById('zone') || document.getElementById('tgh');
   if (!host || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
   var cv = document.createElement('canvas');
   cv.className = 'fxg';
