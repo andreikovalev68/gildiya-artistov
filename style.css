@@ -121,3 +121,5 @@ footer{background:var(--blue);color:#fff;padding:26px 0;font-size:15px}
 @media (max-width:900px){.videos{grid-template-columns:1fr}}
 .vlink{display:block;margin-top:4px;font-family:"Golos Text",sans-serif;font-weight:600;font-size:15px;color:var(--red)}
 .vlink:hover{text-decoration:underline}
+.vgroup{margin:34px 0 18px;font-size:clamp(22px,3vw,30px);color:var(--blue);font-weight:700}
+.vgroup:first-of-type{margin-top:6px}
